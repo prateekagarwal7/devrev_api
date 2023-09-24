@@ -76,6 +76,35 @@ app.post('/api/addBook', async (req, res) => {
  
 //read
 
+
+
+app.get('/api/getAllBooks', async (req, res) => {
+  try {
+    // Query Firestore to get all books
+    const querySnapshot = await db.collection('books').get();
+
+    // Check if any books were found
+    if (querySnapshot.empty) {
+      return res.status(404).json({ error: 'No books found' });
+    }
+
+    // Create an array to store book data
+    const booksData = [];
+
+    // Loop through the query result to collect book data
+    querySnapshot.forEach((doc) => {
+      const bookData = doc.data();
+      booksData.push(bookData);
+    });
+
+    return res.status(200).json({ books: booksData });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'An error occurred while fetching the books.' });
+  }
+});
+
+
 // GET endpoint to fetch a book by name
 app.get('/api/getBookByName/:name', async (req, res) => {
     try {
